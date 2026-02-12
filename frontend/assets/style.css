@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
+body {
+    background-color: #000000;
+    font-family: 'Roboto Mono', monospace;
+    color: white;
+}
+
+/* Remove border radius everywhere */
+.btn, .form-control, .card, .nav-tabs .nav-link {
+    border-radius: 0px !important;
+}
+
+/* Typography */
+.inst-header {
+    font-size: 28px;
+    color: #FF9F00;
+    font-weight: bold;
+    line-height: 1.1;
+}
+
+.inst-desc {
+    font-size: 13px;
+    color: #888;
+    margin-top: 2px;
+}
+
+/* Status Bar */
+.terminal-alert {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #000;
+    border-top: 3px solid #00FF00;
+    color: #00FF00;
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+    z-index: 999;
+}
+
+/* Custom Button Colors */
+.btn-buy {
+    background-color: #00851c !important;
+    color: white !important;
+    font-weight: bold;
+    border: none;
+}
+
+.btn-sell {
+    background-color: #a1122c !important;
+    color: white !important;
+    font-weight: bold;
+    border: none;
+}
+
+.btn-tertiary {
+    background-color: transparent !important;
+    border: 1px solid #444 !important;
+    color: #FF9F00 !important;
+}
+
+.btn-cancel {
+    background-color: #FF4136 !important;
+    color: white;
+    font-weight: bold;
+}
+
+/* Wire Trace Box Styling */
+.trace-box {
+    border: 1px solid #333;
+    padding: 10px;
+    height: 150px;
+    overflow-y: scroll;
+    font-size: 12px;
+    font-family: monospace;
+}
