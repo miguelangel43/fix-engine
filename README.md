@@ -1,3 +1,4 @@
+```
 fix-engine/
 │
 ├── backend/                   # --- THE FIX ENGINE ---
@@ -25,3 +26,4 @@ fix-engine/
 ├── requirements.txt           # List of libraries (dash, redis, quickfix, pandas)
 ├── .env                       # Secrets (API Keys, Passwords)
 └── run.py                     # Script to launch both processes at once
+```
