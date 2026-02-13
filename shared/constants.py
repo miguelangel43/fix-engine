@@ -49,3 +49,7 @@ TICK_SIZES = {
     "SR3H6": 0.005,
     "SR3Z6": 0.005,
 }
+
+# FIX integration Redis keys
+REDIS_KEY_EXECUTION_REPORTS = "execution_reports"
+REDIS_KEY_FIX_STATUS = "fix_session_status"

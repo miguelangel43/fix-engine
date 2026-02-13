@@ -18,7 +18,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - REDIS_HOST=redis
-      - PYTHONPATH=/app # Tells Python to look in root for imports
+      - PYTHONPATH=/app
     networks:
       - trading-net
     depends_on:
@@ -29,9 +29,12 @@ services:
     volumes:
       - ./backend:/app/backend
       - ./shared:/app/shared
+      - fix-store:/tmp/fix_store
+      - fix-log:/tmp/fix_log
     environment:
+      - PYTHONUNBUFFERED=1
       - REDIS_HOST=redis
-      - PYTHONPATH=/app # Tells Python to look in root for imports
+      - PYTHONPATH=/app
     networks:
       - trading-net
     depends_on:
@@ -40,3 +43,7 @@ services:
 networks:
   trading-net:
     driver: bridge
+
+volumes:
+  fix-store:
+  fix-log:

@@ -30,4 +30,4 @@ RUN mkdir -p /app/shared
 ENV PYTHONPATH=/app
 
 # Command to run the engine
-CMD ["python", "backend/fix_engine.py"]
+CMD ["python", "backend/engine.py", "start"]

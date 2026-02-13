@@ -5,15 +5,21 @@ import sys
 
 # Import the entry points for both parts of your app
 # Note: You might need to adjust imports based on your exact folder names
-from backend.fix_engine import start_fix_engine
+import argparse
+from backend.engine import cmd_start
 from frontend.app import run_dash_server
 
 def run_backend():
     """Wrapper to start the FIX engine"""
     print(f"[Backend] Starting FIX Engine on PID {os.getpid()}...")
     try:
-        # This function should contain your initiator.start() and the loop
-        start_fix_engine() 
+        args = argparse.Namespace(
+            redis_host=None,
+            fix_config="backend/config/quickfix.cfg",
+            no_market_data=False,
+            verbose=False,
+        )
+        cmd_start(args)
     except Exception as e:
         print(f"[Backend] Error: {e}")
 
