@@ -57,7 +57,7 @@ def render_instrument_row(inst_id, label, description):
         # Col 5: Cancel Button (hidden by default)
         dbc.Col([
             dbc.Button("CANCEL", id={'type': 'btn-cancel', 'index': inst_id}, className="btn-cancel w-100", style={'display': 'none'})
-        ], width=2)
+        ], width=1)
     ], className="mb-4 align-items-center border-bottom border-secondary pb-3")
 
 
