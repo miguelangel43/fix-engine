@@ -7,68 +7,70 @@ import random
 
 # --- SHARED IMPORTS ---
 from shared.redis_client import get_redis_connection
-from shared.constants import REDIS_KEY_ORDER_QUEUE, REDIS_KEY_MARKET_DATA, REDIS_KEY_LATEST_PRICES
+from shared.constants import REDIS_KEY_ORDER_QUEUE, REDIS_KEY_MARKET_DATA, REDIS_KEY_LATEST_PRICES, INSTRUMENTS
 
 r = get_redis_connection()
 
-# Initial Prices for our simulation
-market_prices = {
-    "2Y": 100.00,
-    "5Y": 100.00,
-    "10Y": 100.00,
-    "30Y": 100.00
+# Per-instrument walk step and half-spread (walk_step, half_spread)
+SPREAD_CONFIG = {
+    "2Y":    (0.010, 0.005),
+    "3Y":    (0.010, 0.005),
+    "5Y":    (0.015, 0.008),
+    "10Y":   (0.015, 0.010),
+    "30Y":   (0.020, 0.015),
+    "TUH6":  (0.020, 0.008),
+    "TYH6":  (0.025, 0.010),
+    "USH6":  (0.030, 0.015),
+    "SR3H6": (0.010, 0.005),
+    "SR3Z6": (0.010, 0.005),
 }
 
 def run_market_data_simulator():
     print(f"Market Data Simulator Started.", flush=True)
-    
-    # Base "Fair Value" to start with
-    fair_values = {
-        "2Y": 100.00,
-        "5Y": 100.00,
-        "10Y": 100.00,
-        "30Y": 100.00
-    }
+
+    # Build fair_values from the shared INSTRUMENTS list
+    fair_values  = {inst_id: base_price for inst_id, _, _, base_price, _ in INSTRUMENTS}
+    session_open = dict(fair_values)           # frozen at session start
+    twap_sum     = dict(fair_values)           # running sum for TWAP
+    twap_count   = {inst_id: 1 for inst_id in fair_values}
 
     while True:
         timestamp = time.time()
         market_snapshot = {}
 
-        for sym in fair_values:
-            # 1. Move the "Fair Value" (Random Walk)
-            move = random.uniform(-0.02, 0.02)
-            fair_values[sym] += move
-            
-            # 2. Calculate Spread (Random tightness)
-            # e.g., Spread between 1 cent and 3 cents
-            spread = random.uniform(0.01, 0.03)
-            
-            # 3. Derive Bid/Ask
-            mid = fair_values[sym]
-            bid = round(mid - (spread / 2), 3)
-            ask = round(mid + (spread / 2), 3)
-            
-            # Re-calculate Mid to be exact center of rounded bid/ask
-            final_mid = round((bid + ask) / 2, 3)
+        for inst_id, _, _, _, _ in INSTRUMENTS:
+            walk_step, half_spread = SPREAD_CONFIG[inst_id]
 
-            market_snapshot[sym] = {
-                "bid": bid,
-                "ask": ask,
-                "mid": final_mid,
-                "ts": timestamp
+            # 1. Move the "Fair Value" (Random Walk)
+            fair_values[inst_id] += random.uniform(-walk_step, walk_step)
+
+            # 2. Derive Bid/Ask around the fair value
+            mid = fair_values[inst_id]
+            bid = round(mid - half_spread, 5)
+            ask = round(mid + half_spread, 5)
+            final_mid = round((bid + ask) / 2, 5)
+
+            # 3. Update running TWAP
+            twap_sum[inst_id]   += final_mid
+            twap_count[inst_id] += 1
+            vwap = round(twap_sum[inst_id] / twap_count[inst_id], 5)
+
+            market_snapshot[inst_id] = {
+                "bid":    bid,
+                "ask":    ask,
+                "mid":    final_mid,
+                "change": round(final_mid - session_open[inst_id], 5),
+                "vwap":   vwap,
+                "ts":     timestamp,
             }
 
-        # 4. Save to Redis
+        # Save to Redis
         if r:
             json_data = json.dumps(market_snapshot)
-            
-            # A) Save as a static key (For Dash to poll)
             r.set(REDIS_KEY_LATEST_PRICES, json_data)
-            
-            # B) Publish as a stream (For future websockets)
             r.publish(REDIS_KEY_MARKET_DATA, json_data)
-            
-        time.sleep(1) # Update every second
+
+        time.sleep(1)
 
 def start_fix_engine():
     """

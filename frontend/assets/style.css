@@ -76,3 +76,52 @@ body {
     font-size: 12px;
     font-family: monospace;
 }
+
+/* Live Price Display */
+.price-display {
+    line-height: 1.4;
+}
+
+.price-bid {
+    color: #f5c542;
+    font-size: 0.85rem;
+    font-family: monospace;
+}
+
+.price-ask {
+    color: #7ec8e3;
+    font-size: 0.85rem;
+    font-family: monospace;
+}
+
+.price-mid {
+    color: #666;
+    font-size: 0.75rem;
+    font-family: monospace;
+}
+
+.price-change-up {
+    color: #00cc44;
+    font-size: 0.75rem;
+    font-family: monospace;
+}
+
+.price-change-down {
+    color: #ff4444;
+    font-size: 0.75rem;
+    font-family: monospace;
+}
+
+.price-vwap {
+    color: #aaa;
+    font-size: 0.75rem;
+    font-family: monospace;
+}
+
+/* Stage order button (BUY 1 ↓) */
+.btn-stage {
+    background-color: transparent !important;
+    border: 1px solid #00851c !important;
+    color: #00cc33 !important;
+    font-size: 0.75rem;
+}
